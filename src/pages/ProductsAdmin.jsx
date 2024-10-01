@@ -1,18 +1,40 @@
-import { useContext, useState } from "react";
 import { Layout } from "../components/Layout";
-import { DataContext } from "../contexts/data-context";
 import { PencilIcon, Plus, PlusIcon, Trash2Icon } from "lucide-react";
 import { ModalCreateProduct } from "../components/ModalCreateProduct";
 import { ModalUpdateProduct } from "../components/ModalUpdateProduct";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 export const ProductsAdmin = () => {
-  const { products, setProducts } = useContext(DataContext);
   const [isOpemModalCreate, setIsOpemModalCreate] = useState(false);
   const [isOpemModalUpdate, setIsOpemModalUpdate] = useState(false);
   const [productSelected, setProductSelected] = useState(null);
+  const [products, setProducts] = useState([]);
 
-  const handleDeleteClick = (id) => {
-    setProducts((products) => products.filter((product) => product.id !== id));
+  useEffect(() => {
+    const fetchDados = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/product");
+        console.log(response.data);
+
+        setProducts(response.data);
+      } catch (error) {
+        console.log("Erro ao fazer a requisição:", error);
+      }
+    };
+
+    fetchDados();
+  }, []);
+
+  const handleDeleteClick = async (id) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:8080/product/${id}`
+      );
+      console.log("Dado excluído:", response.data);
+    } catch (error) {
+      console.error("Erro ao excluir dado:", error);
+    }
   };
 
   return (
@@ -145,7 +167,7 @@ export const ProductsAdmin = () => {
                   <button
                     className="text-red-600 hover:text-red-900 p-2 rounded-md hover:bg-zinc-200"
                     onClick={() => {
-                      handleDeleteClick(product.id);
+                      handleDeleteClick(product._id);
                     }}
                   >
                     <Trash2Icon size={16} />

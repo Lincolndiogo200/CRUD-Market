@@ -14,13 +14,16 @@ const Login = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    const user = users.find((user) => user.cpf === cpf && user.password === password);
+    const user = users.find(
+      (user) => user.cpf === cpf && user.password === password
+    );
+    console.log(user);
 
     if (user && user.isAdmin) {
-      setUserAuthenticated(user)
+      setUserAuthenticated(user);
       navigate("/home/admin");
     } else if (user && !user.isAdmin) {
-      setUserAuthenticated(user)
+      setUserAuthenticated(user);
       navigate("/home");
     } else {
       toast.error("CPF ou senha incorretos!");

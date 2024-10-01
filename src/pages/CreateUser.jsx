@@ -3,10 +3,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { DataContext } from "../contexts/data-context";
+import axios from "axios";
 
 const CreateUser = () => {
-  const { setUsers } = useContext(DataContext);
-
   const [name, setName] = useState("");
   const [cpf, setCpf] = useState("");
   const [email, setEmail] = useState("");
@@ -17,6 +16,7 @@ const CreateUser = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    console.log("cliquei");
 
     if (password !== confirmPassword) {
       return toast.error("As senhas não são iguais!");
@@ -26,22 +26,30 @@ const CreateUser = () => {
       return toast.error("Por favor, preencha todos os campos corretamente.");
     }
 
-    toast.success("Conta criada com sucesso!");
+    const novoDado = {
+      name,
+      cpf,
+      email,
+      password,
+      isAdmin,
+      createdAt,
+    };
 
-    setUsers((state) => {
-      return [
-        ...state,
-        {
-          id: state.length + 1,
-          name,
-          cpf,
-          email,
-          password: password,
-          isAdmin: false,
-          createdAt: new Date().toLocaleDateString(),
-        },
-      ];
-    });
+    const criarDado = async () => {
+      try {
+        const response = await axios.post(
+          "http://localhost:8080/user",
+          novoDado
+        );
+        console.log("Dado criado:", response.data);
+      } catch (error) {
+        console.error("Erro ao criar dado:", error);
+      }
+    };
+
+    criarDado();
+
+    toast.success("Conta criada com sucesso!");
 
     setTimeout(() => {
       navigate("/");

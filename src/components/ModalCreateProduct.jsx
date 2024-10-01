@@ -1,8 +1,8 @@
 import { useContext, useState } from "react";
 import { DataContext } from "../contexts/data-context";
+import axios from "axios";
 
 export const ModalCreateProduct = ({ setIsOpenModal }) => {
-  const { setProducts, products } = useContext(DataContext);
   const [checked, setChecked] = useState(false);
 
   const handleSubmit = (event) => {
@@ -11,7 +11,6 @@ export const ModalCreateProduct = ({ setIsOpenModal }) => {
     const formData = new FormData(event.currentTarget);
 
     const data = {
-      id: products.length + 1,
       name: formData.get("name"),
       price: formData.get("price"),
       percent: formData.get("percent"),
@@ -22,8 +21,21 @@ export const ModalCreateProduct = ({ setIsOpenModal }) => {
       inSale: checked,
     };
 
-    setProducts((products) => [...products, data]);
     setIsOpenModal(false);
+
+    const criarDado = async () => {
+      try {
+        const response = await axios.post(
+          "http://localhost:8080/product",
+          data
+        );
+        console.log("Dado criado:", response.data);
+      } catch (error) {
+        console.error("Erro ao criar dado:", error);
+      }
+    };
+
+    criarDado();
   };
 
   return (
